@@ -4,16 +4,46 @@
 * どうかをテストする。Rangeは反復可能。範囲内のすべての整数に対して反復する。
 */
 class Range {
-  constructor (from, to) {
+  constructor (from, to, step = 1) {
     this.from = from;
     this.to = to;
+    this.step = step;
   }
 
   // Rangeを数値のSetのように振る舞うようにする。
-  has(x) { return typeof x === "number" && this.from <= x && x <= this.to; }
+  has(x) {
+    if (typeof x === "number" && this.from <= x && x <= this.to) {
+      if (this.step === 1) {
+        return true;
+      }
+      let next = this.from;
+      while (next <= this.to) {
+        if (x === next) {
+          return true;
+        } else if (x < next) {
+          return false;
+        }
+        next += this.step;
+      }
+      console.log('while end!');
+      return false;
+    }
+  }
 
   // 集合の記法形式の文字列表現を返す。
-  toString() { return `{ x | ${this.from} ≤ x ≤ ${this.to} }`; }
+  toString() {
+    if (this.step === 1) {
+      return `{ x | ${this.from} ≤ x ≤ ${this.to} }`;
+    } else {
+      let next = this.from;
+      let res = [];
+      while (next <= this.to) {
+        res.push(next);
+        next += this.step;
+      }
+      return `{ ${res.join(', ')} }`;
+    }
+  }
 
   // Rangeを反復可能にするために、イテレータオブジェクトを返す。
   // このメソッドの名前は文字列ではなく、特別なSymbolであることに注意。
@@ -23,13 +53,18 @@ class Range {
     // ある。まず、from以上の整数から始める。
     let next = Math.ceil(this.from);  // これが次に返す値。
     let last = this.to;               // this.toよりも大きな値は返さない。
+    let step = this.step;
     return {                          // これがイテレータオブジェクト。
       // このnext()メソッドがあるので、イテレータオブジェクトになる。
       // イテレータオブジェクトは反復結果オブジェクトを返さなければならない。
       next() {
-        return (next <= last)   // 最後の値を返していないのであれば、
-          ? { value: next++ } // 次の値を返して、次の値をインクリメントする。
-          : { done: true };   // 返していれば、反復完了を示す。
+        if (next <= last) { // 最後の値を返していないのであれば、
+          let currentValue = next;
+          next += step;
+          return { value: currentValue }; // 次の値を返して、次の値をインクリメントする。
+        } else {
+          return { done: true }; // 返していれば、反復完了を示す。
+        }
       },
 
       // 利便性のために、イテレータ自体も反復可能にしておく。

@@ -28,3 +28,10 @@ console.log([...m]);
 
 for (let x of new Range(1,10)) console.log(x); // 1から10までをログに記録する。
 console.log([...new Range(-2,2)]);
+
+let range1 = new Range(-2,20, 3);
+console.log([...range1]);
+console.log(range1.has(5));
+console.log(range1.has(7));
+console.log(range1.has(20));
+console.log(range1.toString());
