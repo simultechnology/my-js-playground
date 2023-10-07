@@ -12,22 +12,9 @@ class Range {
 
   // Rangeを数値のSetのように振る舞うようにする。
   has(x) {
-    if (typeof x === "number" && this.from <= x && x <= this.to) {
-      if (this.step === 1) {
-        return true;
-      }
-      let next = this.from;
-      while (next <= this.to) {
-        if (x === next) {
-          return true;
-        } else if (x < next) {
-          return false;
-        }
-        next += this.step;
-      }
-      console.log('while end!');
-      return false;
-    }
+    if (typeof x !== "number") return false;
+    if (x < this.from || x > this.to) return false;
+    return (x - this.from) % this.step === 0;
   }
 
   // 集合の記法形式の文字列表現を返す。
@@ -35,11 +22,9 @@ class Range {
     if (this.step === 1) {
       return `{ x | ${this.from} ≤ x ≤ ${this.to} }`;
     } else {
-      let next = this.from;
       let res = [];
-      while (next <= this.to) {
-        res.push(next);
-        next += this.step;
+      for(let val = this.from; val <= this.to; val += this.step) {
+        res.push(val);
       }
       return `{ ${res.join(', ')} }`;
     }
